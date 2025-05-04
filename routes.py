@@ -160,17 +160,28 @@ def rate_joke():
 @app.route('/api/get-jokes', methods=['GET'])
 @login_required
 def get_jokes():
-    jokes = Joke.query.filter_by(user_id=current_user.id).order_by(Joke.created_at.desc()).limit(20).all()
+    jokes = Joke.query.filter_by(user_id=current_user.id).order_by(Joke.created_at.asc()).all()
+    
+    # Load conversation alternating between user and AI
+    conversation = []
+    is_user_message = True
+    
+    for i, joke in enumerate(jokes):
+        # Alternate between user and AI messages for proper formatting
+        # In a real chat app, we'd have a message_type field in the database
+        # This is a temporary solution to fix the formatting issue
+        is_user_message = i % 2 == 0  # Even indexes (0, 2, 4...) are user messages
+        
+        conversation.append({
+            "id": joke.id,
+            "content": joke.content,
+            "timestamp": joke.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+            "reaction": joke.reaction,
+            "is_user": is_user_message
+        })
     
     return jsonify({
-        "jokes": [
-            {
-                "id": joke.id,
-                "content": joke.content,
-                "timestamp": joke.created_at.strftime("%Y-%m-%d %H:%M:%S"),
-                "reaction": joke.reaction
-            } for joke in jokes
-        ]
+        "jokes": conversation
     })
 
 @app.route('/api/clear-jokes', methods=['POST'])
