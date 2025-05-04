@@ -1,46 +1,12 @@
-import json
 import os
-import logging
-import random
+import json
+from openai import OpenAI
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
+# the newest OpenAI model is "gpt-4o" which was released May 13, 2024.
+# do not change this unless explicitly requested by the user
+MODEL = "gpt-4o"
 
-# Import OpenAI library if available
-try:
-    from openai import OpenAI
-    OPENAI_AVAILABLE = True
-except ImportError:
-    OPENAI_AVAILABLE = False
-    logging.warning("OpenAI library not installed. Using fallback responses only.")
-
-# Fallback jokes by category
-FALLBACK_JOKES = {
-    "dark": [
-        "Why don't scientists trust atoms? Because they make up everything!",
-        "I told my wife she was drawing her eyebrows too high. She looked surprised.",
-        "I have a joke about unemployed people, but it doesn't work.",
-        "What's the difference between a well-dressed man on a bicycle and a poorly dressed man on a tricycle? Attire."
-    ],
-    "pun": [
-        "I'm reading a book on anti-gravity. It's impossible to put down!",
-        "Did you hear about the guy who invented the knock-knock joke? He won the 'no-bell' prize.",
-        "I used to be a baker, but I couldn't make enough dough.",
-        "How do you organize a space party? You planet."
-    ],
-    "sarcastic": [
-        "I'm not arguing, I'm just explaining why I'm right.",
-        "I'm not saying I'm Batman. I'm just saying no one has ever seen me and Batman in the same room.",
-        "I'm not lazy, I'm just on energy-saving mode.",
-        "I don't always have patience, but when I do, it lasts about 5 seconds."
-    ],
-    "general": [
-        "Why did the scarecrow win an award? Because he was outstanding in his field!",
-        "What do you call a fake noodle? An impasta!",
-        "Why don't scientists trust atoms? Because they make up everything!",
-        "What's the best time to go to the dentist? Tooth hurty!"
-    ]
-}
+client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
 def generate_joke(user_data=None, previous_jokes=None, user_message=None):
     """
@@ -54,95 +20,115 @@ def generate_joke(user_data=None, previous_jokes=None, user_message=None):
     Returns:
         str: The generated joke or conversational response
     """
+    # Default system message for joke generation
+    system_message = """You are JokeTron, an AI comedy assistant specializing in generating jokes and humor.
+    Your primary goal is to make the user laugh with clever, original jokes and comedy.
+    Keep responses concise and focused on humor.
+    Adapt your comedy style based on the user's profile and their message.
+    If asked a question, try to answer in a humorous way while being helpful.
+    Avoid any inappropriate, offensive, or adult content."""
+    
+    # Build the messages for the API call
+    messages = [{"role": "system", "content": system_message}]
+    
+    # Add user profile context if available
+    if user_data:
+        profile_prompt = f"""User profile information:
+        - Age: {user_data.get('age', 'Unknown')}
+        - Region: {user_data.get('region', 'Unknown')}
+        - Preferred humor style: {user_data.get('humor_style', 'General')}
+        - Language: {user_data.get('language', 'English')}
+        
+        Please adapt your humor style to match these preferences."""
+        
+        messages.append({"role": "user", "content": profile_prompt})
+        messages.append({"role": "assistant", "content": "I'll personalize jokes based on your profile!"})
+    
+    # Add conversation history if available
+    if previous_jokes and len(previous_jokes) > 0:
+        # Limit to last 5 jokes to keep context size manageable
+        recent_jokes = previous_jokes[-5:]
+        
+        for joke in recent_jokes:
+            if joke.get('reaction'):
+                reaction_note = f"User reaction: {joke.get('reaction')}"
+                messages.append({"role": "assistant", "content": joke.get('content')})
+                messages.append({"role": "user", "content": reaction_note})
+    
+    # Add the user's new message
+    if user_message:
+        messages.append({"role": "user", "content": user_message})
+    else:
+        messages.append({"role": "user", "content": "Tell me a joke that would make me laugh."})
+    
     try:
-        if not OPENAI_AVAILABLE or not os.environ.get("OPENAI_API_KEY"):
-            # If OpenAI is not available, use fallback jokes
-            return get_fallback_joke(user_data)
-        
-        # Initialize OpenAI client
-        openai = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
-        
-        # Format user data for context
-        user_profile = ""
-        if user_data:
-            user_profile = f"""
-            User profile information:
-            - Age: {user_data.get('age', 'Not specified')}
-            - Region: {user_data.get('region', 'Not specified')}
-            - Preferred humor style: {user_data.get('humor_style', 'Not specified')}
-            - Language: {user_data.get('language', 'English')}
-            
-            Please adapt your humor style to match these preferences.
-            """
-        
-        # Format previous jokes for context
-        joke_history = ""
-        if previous_jokes and len(previous_jokes) > 0:
-            joke_history = "Recent conversation history:\n"
-            for i, joke in enumerate(previous_jokes[:5]):  # Limit to 5 most recent jokes
-                reaction = joke.get('reaction', 'No reaction')
-                joke_history += f"Joke {i+1}: {joke.get('content')}\nUser reaction: {reaction}\n\n"
-        
-        # Format user message
-        message_context = f"User says: {user_message}" if user_message else "User has requested a joke."
-        
-        # Create the complete prompt
-        messages = [
-            {
-                "role": "system", 
-                "content": "You are JokeTron, an AI comedy assistant specializing in generating jokes and humor.\n"
-                           "Your primary goal is to make the user laugh with clever, original jokes and comedy.\n"
-                           "Keep responses concise and focused on humor.\n"
-                           "Adapt your comedy style based on the user's profile and their message.\n"
-                           "If asked a question, try to answer in a humorous way while being helpful.\n"
-                           "Avoid any inappropriate, offensive, or adult content."
-            },
-            {
-                "role": "user",
-                "content": user_profile
-            },
-            {
-                "role": "assistant",
-                "content": "I'll personalize jokes based on your profile!"
-            },
-            {
-                "role": "user",
-                "content": message_context
-            }
-        ]
-        
-        # Call the OpenAI API
-        response = openai.chat.completions.create(
-            model="gpt-4o",  # the newest OpenAI model is "gpt-4o" which was released May 13, 2024
+        # Make the API call to generate the joke
+        response = client.chat.completions.create(
+            model=MODEL,
             messages=messages,
             max_tokens=300,
-            temperature=0.8,
+            temperature=0.8,  # A bit of randomness for creative jokes
         )
         
-        # Extract the response text
-        joke_text = response.choices[0].message.content
+        # Extract and return the joke text
+        joke_text = response.choices[0].message.content.strip()
         return joke_text
-    
+        
     except Exception as e:
-        logging.error(f"Error generating joke: {str(e)}")
-        return get_fallback_joke(user_data)
-
-def get_fallback_joke(user_data=None):
-    """Return a fallback joke when OpenAI API is unavailable."""
-    humor_style = user_data.get('humor_style', 'general').lower() if user_data else 'general'
-    
-    # Map user's humor style to available categories
-    if 'dark' in humor_style or 'black' in humor_style:
-        category = 'dark'
-    elif 'pun' in humor_style or 'word' in humor_style:
-        category = 'pun'
-    elif 'sarcas' in humor_style or 'ironic' in humor_style or 'dry' in humor_style:
-        category = 'sarcastic'
-    else:
-        category = 'general'
-    
-    # Get jokes for the category
-    jokes = FALLBACK_JOKES.get(category, FALLBACK_JOKES['general'])
-    
-    # Return a random joke from the category
-    return random.choice(jokes)
+        error_message = str(e)
+        print(f"Error generating joke: {error_message}")
+        
+        # Check for specific error types
+        if "insufficient_quota" in error_message or "exceeded your current quota" in error_message:
+            return "🛑 OpenAI API Quota Exceeded: The API key has run out of credits. Please check your OpenAI account billing details to continue using AI-generated jokes."
+        elif "rate limit" in error_message.lower() or "429" in error_message:
+            return "⏱️ Rate limit reached. The AI is taking a quick break. Please try again in a moment!"
+        else:
+            # Provide a personalized fallback joke based on user preferences
+            import random
+            
+            # Get user humor style if available
+            humor_style = "general"
+            if user_data and user_data.get('humor_style'):
+                humor_style = user_data.get('humor_style').lower()
+            
+            # Jokes by category
+            pun_jokes = [
+                "I used to be a baker, but I couldn't make enough dough.",
+                "What do you call a fake noodle? An impasta!",
+                "I'm reading a book about anti-gravity. It's impossible to put down!",
+                "Why don't scientists trust atoms? Because they make up everything!",
+            ]
+            
+            dark_jokes = [
+                "Light travels faster than sound. That's why some people appear bright until they speak.",
+                "I was going to tell a dead baby joke. But I decided to abort.",
+                "I have a stepladder because my real ladder left when I was a kid.",
+                "My wife told me to stop impersonating a flamingo. I had to put my foot down.",
+            ]
+            
+            sarcastic_jokes = [
+                "I'm not lazy, I'm just on energy-saving mode.",
+                "I told my wife she was drawing her eyebrows too high. She looked surprised.",
+                "Common sense is like deodorant. The people who need it most never use it.",
+                "I don't have a short attention span, I just... oh look, a butterfly!",
+            ]
+            
+            general_jokes = [
+                "Why did the scarecrow win an award? Because he was outstanding in his field!",
+                "What's the best thing about Switzerland? I don't know, but the flag is a big plus.",
+                "Did you hear about the mathematician who's afraid of negative numbers? He'll stop at nothing to avoid them.",
+                "Why don't eggs tell jokes? They'd crack each other up.",
+            ]
+            
+            # Select appropriate joke category
+            if "pun" in humor_style:
+                jokes = pun_jokes
+            elif "dark" in humor_style:
+                jokes = dark_jokes
+            elif "sarcastic" in humor_style:
+                jokes = sarcastic_jokes
+            else:
+                jokes = general_jokes
+                
+            return f"Here's a joke while my AI brain reboots: {random.choice(jokes)}"
