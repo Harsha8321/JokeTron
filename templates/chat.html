@@ -1,26 +1,32 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<div class="max-w-5xl mx-auto">
-    <div class="text-center mb-6">
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Your Personal Comedy Club</h1>
+<div class="w-full mx-auto px-4">
+    <div class="text-center mb-2">
+        <h1 class="text-xl font-bold text-gray-900 dark:text-white">Your Personal Comedy Club</h1>
         <p class="text-gray-600 dark:text-gray-400 mt-2">Jokes tailored to your sense of humor</p>
     </div>
     
     <!-- Chat Container -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md mb-6 overflow-hidden">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg mb-4 overflow-hidden max-w-8xl mx-auto w-full">
         <div class="border-b border-gray-200 dark:border-gray-700 p-4 bg-gray-50 dark:bg-gray-900 flex items-center justify-between">
             <div class="flex items-center">
-                <div class="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold mr-3">
+                <div class="w-12 h-12 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold mr-3">
                     JT
                 </div>
                 <div>
-                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">JokeTron</h2>
+                    <h2 class="text-xl font-semibold text-gray-900 dark:text-white">JokeTron</h2>
                     <p class="text-sm text-gray-500 dark:text-gray-400">AI Comedy Assistant</p>
                 </div>
             </div>
             
-            <div class="text-gray-500 dark:text-gray-400">
+            <div class="flex items-center space-x-3">
+                <button id="clear-chat" class="px-3 py-1.5 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-md text-sm font-medium flex items-center transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    Clear Chat
+                </button>
                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
                     <span class="h-2 w-2 rounded-full bg-green-500 mr-1"></span>
                     Online
@@ -28,50 +34,26 @@
             </div>
         </div>
         
-        <div class="chat-container p-4 h-96 overflow-y-auto">
+        <div class="chat-container p-6 h-[69vh] overflow-y-auto">
             <!-- Jokes will be added here by JavaScript -->
         </div>
         
-        <div class="border-t border-gray-200 dark:border-gray-700 p-4 bg-gray-50 dark:bg-gray-900">
-            <button id="generate-joke-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-4 rounded-md transition duration-150 ease-in-out flex items-center justify-center">
-                <i class="fas fa-magic mr-2"></i>
-                Generate a Joke
-            </button>
+        <div class="border-t border-gray-200 dark:border-gray-700 p-5 bg-gray-50 dark:bg-gray-900">
+            <form id="message-form" class="max-w-4xl mx-auto flex items-center">
+                <div class="relative flex-grow mr-3">
+                    <input type="text" id="user-message" class="w-full py-3.5 px-5 text-base border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-800 dark:text-white shadow-sm focus:outline-none" placeholder="Ask anything...">
+                </div>
+                <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white p-3.5 rounded-md transition duration-150 ease-in-out flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </button>
+            </form>
         </div>
     </div>
-    
-    <!-- Info Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <div class="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center mb-4 text-indigo-600 dark:text-indigo-500">
-                <i class="fas fa-info-circle fa-lg"></i>
-            </div>
-            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">How It Works</h3>
-            <p class="text-gray-600 dark:text-gray-400 text-sm">
-                Click the "Generate a Joke" button to create a personalized joke based on your profile preferences. JokeTron learns from your feedback to get better over time.
-            </p>
-        </div>
-        
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <div class="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center mb-4 text-indigo-600 dark:text-indigo-500">
-                <i class="fas fa-thumbs-up fa-lg"></i>
-            </div>
-            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Your Feedback</h3>
-            <p class="text-gray-600 dark:text-gray-400 text-sm">
-                Use the emoji reactions to let JokeTron know what you think of each joke. This helps the AI understand your specific sense of humor and improve future jokes.
-            </p>
-        </div>
-        
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <div class="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center mb-4 text-indigo-600 dark:text-indigo-500">
-                <i class="fas fa-user-edit fa-lg"></i>
-            </div>
-            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Update Preferences</h3>
-            <p class="text-gray-600 dark:text-gray-400 text-sm">
-                Want to try different joke styles? <a href="{{ url_for('profile') }}" class="text-indigo-600 dark:text-indigo-500 hover:underline">Update your profile</a> to change your humor preferences, age, region, or language at any time.
-            </p>
-        </div>
-    </div>
+    <!-- Store current username -->
+    <div id="current-username-data" data-username="{{ current_user.username }}" class="hidden"></div>
 </div>
 {% endblock %}
 

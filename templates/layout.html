@@ -36,6 +36,7 @@
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/chat-styles.css') }}">
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 min-h-screen">
     <!-- Navigation -->
@@ -78,19 +79,13 @@
                         </div>
                         
                         {% if current_user.is_authenticated %}
-                            <!-- Settings button -->
-                            <button id="settings-toggle" class="bg-white dark:bg-gray-700 p-1 rounded-full text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                <span class="sr-only">Open settings</span>
-                                <i class="fas fa-cog fa-lg"></i>
-                            </button>
-                            
                             <!-- Logout -->
                             <a href="{{ url_for('logout') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium">
                                 Logout
                             </a>
                         {% else %}
                             <a href="{{ url_for('signup') }}" class="get-started-btn inline-flex items-center justify-center px-6 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 transition-all duration-300 ease-in-out group">
-                                Let’s Go
+                                Login/Signup
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 transform group-hover:translate-x-1 transition-transform duration-300 ease-in-out" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                                 </svg>
@@ -144,7 +139,7 @@
                         </a>
                     {% else %}
                         <a href="{{ url_for('signup') }}" class="get-started-btn inline-flex items-center justify-center px-6 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 transition-all duration-300 ease-in-out group">
-                            Let’s Go
+                            Login/Signup
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 transform group-hover:translate-x-1 transition-transform duration-300 ease-in-out" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                             </svg>
@@ -172,69 +167,18 @@
     {% endwith %}
 
     <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="w-full mx-auto px-2 py-2">
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Settings Panel - Only shown when logged in -->
-    {% if current_user.is_authenticated %}
-        <div id="settings-panel" class="fixed top-0 right-0 h-full w-80 bg-white dark:bg-gray-800 shadow-lg transform translate-x-full transition-transform duration-300 ease-in-out z-50">
-            <div class="p-6">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-xl font-bold text-gray-900 dark:text-white">Settings</h2>
-                    <button id="close-settings" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-                        <i class="fas fa-times fa-lg"></i>
-                    </button>
-                </div>
-                
-                <div class="space-y-6">
-                    <div>
-                        <h3 class="text-md font-medium text-gray-900 dark:text-white mb-2">Appearance</h3>
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-700 dark:text-gray-300">Dark Mode</span>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="settings-theme-toggle">
-                                <span class="toggle-slider"></span>
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <h3 class="text-md font-medium text-gray-900 dark:text-white mb-2">Account</h3>
-                        <a href="{{ url_for('profile') }}" class="block text-sm text-indigo-600 dark:text-indigo-500 hover:text-indigo-800 dark:hover:text-indigo-400 mb-2">
-                            Edit Profile
-                        </a>
-                        <a href="{{ url_for('logout') }}" class="block text-sm text-red-600 dark:text-red-500 hover:text-red-800 dark:hover:text-red-400">
-                            Logout
-                        </a>
-                    </div>
-                    
-                    <div>
-                        <h3 class="text-md font-medium text-gray-900 dark:text-white mb-2">About</h3>
-                        <p class="text-sm text-gray-700 dark:text-gray-300">
-                            JokeTron v1.0.0<br>
-                            AI-Powered Comedy Generation
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    {% endif %}
+    <!-- Main content area -->
 
     <!-- Footer -->
     <footer class="bg-white dark:bg-gray-800 shadow-inner">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="w-full mx-auto px-2 py-1">
             <div class="flex justify-center">
-                <div class="flex space-x-6">
-                    <a href="#" class="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-500">
-                        <i class="fab fa-twitter fa-lg"></i>
-                    </a>
-                    <a href="#" class="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-500">
-                        <i class="fab fa-facebook fa-lg"></i>
-                    </a>
-                    <a href="#" class="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-500">
-                        <i class="fab fa-instagram fa-lg"></i>
-                    </a>
+                <div class="flex space-x-4 text-sm">
+                    <a href="#" class="text-gray-500 dark:text-gray-500">© 2025</a>
                 </div>
             </div>
         </div>
