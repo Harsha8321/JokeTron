@@ -1,45 +1,43 @@
-# JokeTron - Personalized Joke Platform (SQLite Version)
+# JokeTron
 
-JokeTron is a responsive, chat-based joke platform that offers personalized humor experiences through intuitive user authentication and interactive joke delivery.
+JokeTron is an AI-powered personalized comedy and joke generator web application. The app delivers customized jokes to users based on their preferences, featuring a responsive chat-based interface with user authentication capabilities.
 
 ## Features
-- Dark mode professional interface
-- Unified authentication system
-- Real-time user feedback collection
-- Dynamic joke presentation
-- Personalization based on user preferences
-- **Serverless SQLite database** - no PostgreSQL required!
 
-## Installation
+- User authentication (login/signup) 
+- Personalized user profiles
+- Dark/light mode theme support
+- Responsive design for all devices
+- Chat-based joke delivery interface
+- Feedback collection for joke improvement
+- PostgreSQL database integration
 
-1. Clone or extract this repository to your local machine
-2. Create a virtual environment:
-   ```
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-3. Install the required dependencies:
+## Setup Instructions
+
+1. Clone this repository
+2. Install dependencies:
    ```
    pip install -r requirements.txt
    ```
-
+3. Set up PostgreSQL database and configure DATABASE_URL environment variable
 4. Run the application:
    ```
-   python run.py
+   gunicorn --bind 0.0.0.0:5000 --reuse-port --reload main:app 
    ```
-   
-5. Access the application at http://localhost:5000
 
-## Notes
-- This version uses SQLite instead of PostgreSQL, making it easier to run locally
-- The database will automatically be created as joketron.db in your project folder
-- No additional database configuration is required
+## Project Structure
+
+- `app.py` - Main application setup and database configuration
+- `main.py` - Application entry point
+- `models.py` - Database models for users and jokes
+- `routes.py` - Application routes and controllers
+- `static/` - CSS, JavaScript, and other static files
+- `templates/` - HTML templates using Jinja2
 
 ## Technologies Used
-- Flask
-- Flask-SQLAlchemy with SQLite
-- Flask-Login
-- TailwindCSS
-- JavaScript
 
-
+- Flask (Python web framework)
+- SQLAlchemy (ORM)
+- PostgreSQL (Database)
+- TailwindCSS (Styling)
+- JavaScript (Client-side functionality)
