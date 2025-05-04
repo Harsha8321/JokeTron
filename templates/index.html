@@ -1,0 +1,135 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="text-center mb-12">
+        <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4">
+            <span class="bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-blue-500">
+                JokeTron
+            </span>
+        </h1>
+        <p class="text-xl text-gray-700 dark:text-gray-300 mb-8">
+            AI-powered comedy that adapts to <span class="text-indigo-600 dark:text-indigo-500">your</span> sense of humor
+        </p>
+        <div class="flex flex-row justify-center">
+            <a href="{{ url_for('signup') }}" class="get-started-btn inline-flex items-center justify-center px-10 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 transition-all duration-300 ease-in-out group">
+                Get Started
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2 transform group-hover:translate-x-1 transition-transform duration-300 ease-in-out" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+            </a>
+        </div>
+    </div>
+    
+    <!-- Features Section -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 transform hover:scale-105 transition duration-300">
+            <div class="w-12 h-12 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center mb-4">
+                <i class="fas fa-brain text-indigo-600 dark:text-indigo-500 text-xl"></i>
+            </div>
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">AI-Powered</h3>
+            <p class="text-gray-600 dark:text-gray-400">
+                Powered by state-of-the-art language models trained on diverse comedy styles and cultural references.
+            </p>
+        </div>
+        
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 transform hover:scale-105 transition duration-300">
+            <div class="w-12 h-12 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center mb-4">
+                <i class="fas fa-user-circle text-indigo-600 dark:text-indigo-500 text-xl"></i>
+            </div>
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Personalized</h3>
+            <p class="text-gray-600 dark:text-gray-400">
+                Adapts to your age, region, preferred humor style, and language to deliver jokes that match your taste.
+            </p>
+        </div>
+        
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 transform hover:scale-105 transition duration-300">
+            <div class="w-12 h-12 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center mb-4">
+                <i class="fas fa-sync text-indigo-600 dark:text-indigo-500 text-xl"></i>
+            </div>
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Adaptive</h3>
+            <p class="text-gray-600 dark:text-gray-400">
+                Gets better with your feedback, continuously learning what makes you laugh and refining future jokes.
+            </p>
+        </div>
+    </div>
+    
+    <!-- How It Works Section -->
+    <div class="mb-16">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">How It Works</h2>
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-8">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-6 md:mb-0 md:pr-6">
+                    <div class="rounded-lg bg-gray-100 dark:bg-gray-700 p-4 shadow-inner">
+                        <div class="text-center">
+                            <div class="w-20 h-20 rounded-full bg-indigo-600 mx-auto flex items-center justify-center text-white text-2xl font-bold mb-4">
+                                <i class="fas fa-laugh"></i>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="bg-white dark:bg-gray-800 rounded-md p-3 mx-auto max-w-xs shadow-sm">
+                                    <p class="text-gray-700 dark:text-gray-300 text-sm">👋 Welcome to JokeTron! I'll generate jokes based on your preferences.</p>
+                                </div>
+                                <div class="bg-indigo-100 dark:bg-indigo-900 rounded-md p-3 mx-auto max-w-xs shadow-sm">
+                                    <p class="text-indigo-700 dark:text-indigo-300 text-sm">Why don't scientists trust atoms? Because they make up everything!</p>
+                                </div>
+                                <div class="flex justify-center space-x-4">
+                                    <button class="reaction">
+                                        <span class="text-2xl">😂</span>
+                                    </button>
+                                    <button class="reaction">
+                                        <span class="text-2xl">😐</span>
+                                    </button>
+                                    <button class="reaction">
+                                        <span class="text-2xl">😴</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="md:w-1/2">
+                    <ol class="space-y-4">
+                        <li class="flex">
+                            <div class="flex-shrink-0 h-8 w-8 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold">1</div>
+                            <div class="ml-4">
+                                <h4 class="text-lg font-medium text-gray-900 dark:text-white">Create your profile</h4>
+                                <p class="text-gray-600 dark:text-gray-400">Tell us about your age, region, and preferred humor style.</p>
+                            </div>
+                        </li>
+                        <li class="flex">
+                            <div class="flex-shrink-0 h-8 w-8 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold">2</div>
+                            <div class="ml-4">
+                                <h4 class="text-lg font-medium text-gray-900 dark:text-white">Generate jokes</h4>
+                                <p class="text-gray-600 dark:text-gray-400">Click to receive personalized jokes tailored to your preferences.</p>
+                            </div>
+                        </li>
+                        <li class="flex">
+                            <div class="flex-shrink-0 h-8 w-8 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold">3</div>
+                            <div class="ml-4">
+                                <h4 class="text-lg font-medium text-gray-900 dark:text-white">Provide feedback</h4>
+                                <p class="text-gray-600 dark:text-gray-400">Rate each joke to help JokeTron learn your sense of humor.</p>
+                            </div>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+    
+    <!-- CTA Section -->
+    <div class="bg-gradient-to-r from-indigo-600 to-blue-500 rounded-lg shadow-xl p-8 text-center">
+        <h2 class="text-2xl font-bold text-white mb-4">Ready for Some Laughs?</h2>
+        <p class="text-white text-opacity-90 mb-6 max-w-2xl mx-auto">
+            Sign up now and start enjoying personalized jokes that match your unique sense of humor. JokeTron gets funnier the more you use it!
+        </p>
+        <a href="{{ url_for('signup') }}" class="get-started-btn inline-flex items-center justify-center px-10 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 transition-all duration-300 ease-in-out group">
+            Start Laughing
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2 transform group-hover:translate-x-1 transition-transform duration-300 ease-in-out" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+        </a>
+    </div>
+</div>
+{% endblock %}

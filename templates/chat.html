@@ -1,0 +1,80 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto">
+    <div class="text-center mb-6">
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Your Personal Comedy Club</h1>
+        <p class="text-gray-600 dark:text-gray-400 mt-2">Jokes tailored to your sense of humor</p>
+    </div>
+    
+    <!-- Chat Container -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md mb-6 overflow-hidden">
+        <div class="border-b border-gray-200 dark:border-gray-700 p-4 bg-gray-50 dark:bg-gray-900 flex items-center justify-between">
+            <div class="flex items-center">
+                <div class="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold mr-3">
+                    JT
+                </div>
+                <div>
+                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">JokeTron</h2>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">AI Comedy Assistant</p>
+                </div>
+            </div>
+            
+            <div class="text-gray-500 dark:text-gray-400">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+                    <span class="h-2 w-2 rounded-full bg-green-500 mr-1"></span>
+                    Online
+                </span>
+            </div>
+        </div>
+        
+        <div class="chat-container p-4 h-96 overflow-y-auto">
+            <!-- Jokes will be added here by JavaScript -->
+        </div>
+        
+        <div class="border-t border-gray-200 dark:border-gray-700 p-4 bg-gray-50 dark:bg-gray-900">
+            <button id="generate-joke-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-4 rounded-md transition duration-150 ease-in-out flex items-center justify-center">
+                <i class="fas fa-magic mr-2"></i>
+                Generate a Joke
+            </button>
+        </div>
+    </div>
+    
+    <!-- Info Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <div class="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center mb-4 text-indigo-600 dark:text-indigo-500">
+                <i class="fas fa-info-circle fa-lg"></i>
+            </div>
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">How It Works</h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm">
+                Click the "Generate a Joke" button to create a personalized joke based on your profile preferences. JokeTron learns from your feedback to get better over time.
+            </p>
+        </div>
+        
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <div class="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center mb-4 text-indigo-600 dark:text-indigo-500">
+                <i class="fas fa-thumbs-up fa-lg"></i>
+            </div>
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Your Feedback</h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm">
+                Use the emoji reactions to let JokeTron know what you think of each joke. This helps the AI understand your specific sense of humor and improve future jokes.
+            </p>
+        </div>
+        
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <div class="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center mb-4 text-indigo-600 dark:text-indigo-500">
+                <i class="fas fa-user-edit fa-lg"></i>
+            </div>
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Update Preferences</h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm">
+                Want to try different joke styles? <a href="{{ url_for('profile') }}" class="text-indigo-600 dark:text-indigo-500 hover:underline">Update your profile</a> to change your humor preferences, age, region, or language at any time.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+{% endblock %}
