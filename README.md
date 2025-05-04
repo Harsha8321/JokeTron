@@ -42,5 +42,4 @@ JokeTron is a responsive, chat-based joke platform that offers personalized humo
 - TailwindCSS
 - JavaScript
 
-## License
-MIT
+
