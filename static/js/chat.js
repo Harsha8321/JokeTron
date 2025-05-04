@@ -41,11 +41,19 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.jokes && data.jokes.length > 0) {
-                    // Add jokes in reverse order (oldest first)
-                    data.jokes.reverse().forEach(joke => {
-                        // For now, we'll display all jokes as AI messages
-                        // In a future enhancement, we can add metadata to distinguish user vs AI messages
-                        addJokeToChat(joke.content, joke.id, joke.reaction);
+                    // First, clear any existing messages to avoid duplicates
+                    const existingMessages = document.querySelectorAll('.chat-container > div');
+                    existingMessages.forEach(msg => msg.remove());
+                    
+                    // Add messages in the correct order and with proper formatting
+                    data.jokes.forEach(msg => {
+                        if (msg.is_user) {
+                            // This is a user message
+                            addUserMessageToChat(msg.content);
+                        } else {
+                            // This is an AI/joke message
+                            addJokeToChat(msg.content, msg.id, msg.reaction);
+                        }
                     });
                     
                     // Scroll to bottom of chat
@@ -102,17 +110,25 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add user message to chat
     function addUserMessageToChat(message) {
         const messageElement = document.createElement('div');
-        messageElement.className = 'user-message mb-6 fade-in';
+        messageElement.className = 'user-message mb-3 fade-in';
         
         // Format message with line breaks
         const formattedMessage = message.replace(/\n/g, '<br>');
         
+        // Get the current username from the page
+        const username = document.getElementById('current-username-data')?.getAttribute('data-username') || 'You';
+        
         // Create message content
         messageElement.innerHTML = `
-            <div class="flex items-start justify-end">
-                <div class="flex-grow">
+            <div class="flex items-start justify-end max-w-4xl mx-auto">
+                <div class="message-content">
                     <div class="bg-indigo-600 rounded-lg shadow ml-auto">
                         <p class="text-white">${formattedMessage}</p>
+                    </div>
+                </div>
+                <div class="flex-shrink-0 ml-4">
+                    <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-bold">
+                        ${username.charAt(0).toUpperCase()}
                     </div>
                 </div>
             </div>
@@ -128,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add joke/AI response to chat container
     function addJokeToChat(jokeText, jokeId, existingReaction = null) {
         const jokeElement = document.createElement('div');
-        jokeElement.className = 'joke-container mb-6 fade-in';
+        jokeElement.className = 'joke-container mb-3 fade-in';
         jokeElement.dataset.jokeId = jokeId;
         
         // Format joke text with line breaks
@@ -136,25 +152,25 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Create joke content
         jokeElement.innerHTML = `
-            <div class="flex items-start">
+            <div class="flex items-start max-w-4xl mx-auto">
                 <div class="flex-shrink-0 mr-4">
-                    <div class="w-12 h-12 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold">
+                    <div class="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold">
                         JT
                     </div>
                 </div>
-                <div class="flex-grow">
+                <div class="message-content">
                     <div class="bg-gray-800 rounded-lg shadow">
                         <p class="text-white">${formattedJoke}</p>
                     </div>
-                    <div class="reaction-btns mt-3 flex space-x-4">
+                    <div class="reaction-btns mt-2 flex space-x-3">
                         <button class="reaction ${existingReaction === 'funny' ? 'selected' : ''}" data-reaction="funny" title="Funny">
-                            <span class="text-2xl">😂</span>
+                            <span class="text-xl">😂</span>
                         </button>
                         <button class="reaction ${existingReaction === 'neutral' ? 'selected' : ''}" data-reaction="neutral" title="Neutral">
-                            <span class="text-2xl">😐</span>
+                            <span class="text-xl">😐</span>
                         </button>
                         <button class="reaction ${existingReaction === 'boring' ? 'selected' : ''}" data-reaction="boring" title="Boring">
-                            <span class="text-2xl">😴</span>
+                            <span class="text-xl">😴</span>
                         </button>
                     </div>
                 </div>
@@ -193,7 +209,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add system message to chat
     function addSystemMessageToChat(message) {
         const msgElement = document.createElement('div');
-        msgElement.className = 'system-message mb-4 fade-in';
+        msgElement.className = 'system-message mb-3 fade-in';
         
         msgElement.innerHTML = `
             <div class="flex justify-center">
@@ -209,22 +225,42 @@ document.addEventListener('DOMContentLoaded', function() {
     // Show typing indicator
     function showTypingIndicator() {
         const indicator = document.createElement('div');
-        indicator.className = 'typing-indicator mb-6 fade-in';
+        indicator.className = 'typing-indicator mb-3 fade-in';
         indicator.id = 'typing-indicator';
         
+        // Random funny thinking messages
+        const thinkingMessages = [
+            "Thinking of something funny...",
+            "Searching for the perfect joke...",
+            "Brewing comedy gold...",
+            "Consulting my joke database...",
+            "Channeling my inner comedian...",
+            "Finding humor in chaos...",
+            "Polishing a punchline...",
+            "Loading laugh.exe...",
+            "Warming up the joke engine...",
+            "Calculating optimal humor ratio..."
+        ];
+        
+        // Select a random message
+        const randomMessage = thinkingMessages[Math.floor(Math.random() * thinkingMessages.length)];
+        
         indicator.innerHTML = `
-            <div class="flex items-start">
+            <div class="flex items-start max-w-4xl mx-auto">
                 <div class="flex-shrink-0 mr-4">
-                    <div class="w-12 h-12 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold">
+                    <div class="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold">
                         JT
                     </div>
                 </div>
-                <div class="flex-grow">
-                    <div class="bg-gray-800 rounded-lg shadow py-5 px-6">
+                <div class="message-content">
+                    <div class="bg-gray-800 rounded-lg shadow py-3 px-4">
                         <div class="typing-indicator">
-                            <span></span>
-                            <span></span>
-                            <span></span>
+                            <div class="bubble">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                            <div class="thinking-text text-xs text-gray-400 ml-2 mt-1">${randomMessage}</div>
                         </div>
                     </div>
                 </div>
@@ -233,6 +269,21 @@ document.addEventListener('DOMContentLoaded', function() {
         
         chatContainer.appendChild(indicator);
         scrollToBottom();
+        
+        // Change the thinking message every few seconds for additional fun
+        if (window.typingMessageInterval) {
+            clearInterval(window.typingMessageInterval);
+        }
+        
+        window.typingMessageInterval = setInterval(() => {
+            const thinkingText = document.querySelector('.thinking-text');
+            if (thinkingText) {
+                const newMessage = thinkingMessages[Math.floor(Math.random() * thinkingMessages.length)];
+                thinkingText.textContent = newMessage;
+            } else {
+                clearInterval(window.typingMessageInterval);
+            }
+        }, 3000);
     }
     
     // Hide typing indicator
@@ -240,6 +291,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const indicator = document.getElementById('typing-indicator');
         if (indicator) {
             indicator.remove();
+        }
+        
+        // Clear the interval for changing messages
+        if (window.typingMessageInterval) {
+            clearInterval(window.typingMessageInterval);
+            window.typingMessageInterval = null;
         }
     }
     
