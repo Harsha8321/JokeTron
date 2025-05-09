@@ -278,7 +278,7 @@
                 <span>Enter Your Credentials :)</span>
                 <input type="email" placeholder="Email" name="email" required>
                 <input type="password" placeholder="Password" name="password" required>
-                <a href="#">Forgot Your Password?</a>
+                <a href="{{ url_for('reset_password') }}">Forgot Your Password?</a>
                 <button type="submit">Sign In</button>
             </form>
         </div>

@@ -5,7 +5,7 @@ from app import app, db
 from models import User, Joke
 import logging
 import json
-from openai_service import generate_joke as openai_generate_joke
+from ollama_service import generate_gemma_response
 
 # Home route
 @app.route('/')
@@ -81,6 +81,56 @@ def logout():
     flash('You have been logged out.', 'info')
     return redirect(url_for('index'))
 
+@app.route('/reset-password', methods=['GET', 'POST'])
+def reset_password():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    
+    if request.method == 'POST':
+        # Check if this is step 1 (email verification) or step 2 (password reset)
+        if 'new_password' in request.form:
+            # Step 2: Password reset
+            email = request.form.get('email')
+            new_password = request.form.get('new_password')
+            confirm_password = request.form.get('confirm_password')
+            
+            # Find the user by email
+            user = User.query.filter_by(email=email).first()
+            if not user:
+                flash('User not found. Please try again.', 'danger')
+                return redirect(url_for('reset_password'))
+            
+            # Validate passwords
+            if new_password != confirm_password:
+                flash('Passwords do not match. Please try again.', 'danger')
+                return render_template('reset_password.html', email_verified=True, email=email)
+            
+            if len(new_password) < 6:
+                flash('Password must be at least 6 characters long.', 'danger')
+                return render_template('reset_password.html', email_verified=True, email=email)
+            
+            # Update user password
+            user.set_password(new_password)
+            db.session.commit()
+            
+            flash('Password reset successful! You can now log in with your new password.', 'success')
+            return redirect(url_for('login'))
+            
+        else:
+            # Step 1: Email verification
+            email = request.form.get('email')
+            
+            user = User.query.filter_by(email=email).first()
+            if not user:
+                flash('Email not found. Please check your email address.', 'danger')
+                return render_template('reset_password.html', email_verified=False)
+            
+            # Email is verified, show password reset form
+            return render_template('reset_password.html', email_verified=True, email=email)
+    
+    # GET request - show initial form
+    return render_template('reset_password.html', email_verified=False)
+
 # Profile routes
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
@@ -128,8 +178,8 @@ def generate_joke():
         } for joke in previous_jokes
     ]
     
-    # Generate joke using OpenAI
-    joke_text = openai_generate_joke(user_data, joke_history, "Tell me a joke")
+    # Generate joke using our AI service (Gemma 3)
+    joke_text = generate_gemma_response("Tell me a joke", current_user)
     
     # Save joke to database
     new_joke = Joke(content=joke_text, user_id=current_user.id)
@@ -218,9 +268,8 @@ def send_message():
     db.session.add(user_joke)
     db.session.commit()
     
-    # Generate response based on the user's message
-    # For now, we'll use predetermined responses based on keywords
-    response_text = generate_ai_response(user_message, current_user)
+    # Generate response based on the user's message using Gemma 3
+    response_text = generate_gemma_response(user_message, current_user)
     
     # Save AI response as a joke
     ai_joke = Joke(content=response_text, user_id=current_user.id)
@@ -243,33 +292,24 @@ def send_message():
         }
     })
 
+# This function has been moved to ollama_service.py to avoid naming conflicts
+# We rename the function here to match the imported name
 def generate_ai_response(user_message, user):
-    # Get user profile data for personalization
-    user_data = {
-        "age": user.age,
-        "region": user.region,
-        "humor_style": user.humor_style,
-        "language": user.language
-    }
+    """
+    Helper function that calls the Ollama service with Gemma 3.
+    This function exists only to maintain compatibility with existing code.
     
-    # Get previous jokes for conversation context
-    previous_jokes = Joke.query.filter_by(user_id=user.id).order_by(Joke.created_at.desc()).limit(8).all()
-    joke_history = [
-        {
-            "content": joke.content,
-            "reaction": joke.reaction
-        } for joke in previous_jokes
-    ]
+    Args:
+        user_message (str): The user's message
+        user (User): The current user object
+        
+    Returns:
+        str: A response from the AI
+    """
+    # Fallback responses in case of API error
+    message = user_message.lower()
     
     try:
-        # Use OpenAI to generate a response
-        response = openai_generate_joke(user_data, joke_history, user_message)
-        return response
-    except Exception as e:
-        # Fallback responses in case of API error
-        logging.error(f"OpenAI API error: {str(e)}")
-        message = user_message.lower()
-        
         # Simple fallback logic with canned responses
         if "hello" in message or "hi" in message or "hey" in message:
             return f"Hello {user.username}! How can I make you laugh today?"
@@ -278,4 +318,9 @@ def generate_ai_response(user_message, user):
         elif "who are you" in message:
             return "I'm JokeTron, your personal AI comedy assistant. I'm here to brighten your day with humor!"
         else:
-            return "Sorry, I'm having a bit of trouble with my comedy circuits. Could you try again with another message?"
+            return "I'm not sure how to respond to that. Could you try asking for a joke?"
+            
+    except Exception as e:
+        # Log the error
+        logging.error(f"Response generation error: {str(e)}")
+        return "Sorry, I'm having a bit of trouble with my comedy circuits. Could you try again with another message?"
