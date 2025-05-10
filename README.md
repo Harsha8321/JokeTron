@@ -1,43 +1,88 @@
-# JokeTron
+# JokeTron - MacOS Installation Guide
 
-JokeTron is an AI-powered personalized comedy and joke generator web application. The app delivers customized jokes to users based on their preferences, featuring a responsive chat-based interface with user authentication capabilities.
+JokeTron is an AI-powered joke generator and chat application that uses Gemma 3 on Ollama for personalized humor.
 
-## Features
+## System Requirements
+- MacOS (Intel or Apple Silicon)
+- Python 3.9+ installed
+- 4GB+ RAM (8GB+ recommended for optimal AI performance)
 
-- User authentication (login/signup) 
-- Personalized user profiles
-- Dark/light mode theme support
-- Responsive design for all devices
-- Chat-based joke delivery interface
-- Feedback collection for joke improvement
-- PostgreSQL database integration
+## Installation Instructions
 
-## Setup Instructions
+### Step 1: Clone or download this repository
+Download and extract the JokeTron zip file to your preferred location.
 
-1. Clone this repository
-2. Install dependencies:
-   ```
-   pip install -r requirements.txt
-   ```
-3. Set up PostgreSQL database and configure DATABASE_URL environment variable
-4. Run the application:
-   ```
-   gunicorn --bind 0.0.0.0:5000 --reuse-port --reload main:app 
-   ```
+### Step 2: Set up Python virtual environment
+Open Terminal and navigate to the extracted JokeTron folder:
 
-## Project Structure
+```bash
+cd path/to/joketron
+```
 
-- `app.py` - Main application setup and database configuration
-- `main.py` - Application entry point
-- `models.py` - Database models for users and jokes
-- `routes.py` - Application routes and controllers
-- `static/` - CSS, JavaScript, and other static files
-- `templates/` - HTML templates using Jinja2
+Create and activate a virtual environment:
 
-## Technologies Used
+```bash
+python -m venv venv
+source venv/bin/activate
+```
 
-- Flask (Python web framework)
-- SQLAlchemy (ORM)
-- PostgreSQL (Database)
-- TailwindCSS (Styling)
-- JavaScript (Client-side functionality)
+### Step 3: Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### Step 4: Install Ollama and the Gemma 3 model
+
+First, install Ollama which will host the AI model locally:
+
+```bash
+# For Mac with curl installed (most systems)
+curl -fsSL https://ollama.com/install.sh | sh
+
+# If that doesn't work, visit https://ollama.com/download and download the macOS installer
+```
+
+After installing Ollama, pull the Gemma 3 model:
+
+```bash
+ollama pull gemma3
+```
+
+Note: The Gemma 3 model is approximately 4GB, so this download may take some time depending on your internet connection.
+
+Start the Ollama service:
+
+```bash
+# This will run Ollama in the background
+ollama serve &
+```
+
+### Step 5: Initialize the database
+
+```bash
+python init_db.py
+```
+
+### Step 6: Run the application
+
+```bash
+python run.py
+```
+
+The application will be available at [http://127.0.0.1:8080](http://127.0.0.1:8080) in your web browser.
+
+## Usage Instructions
+
+1. Create an account by clicking "Sign Up"
+2. Complete your profile with preferences to get personalized jokes
+3. Chat with JokeTron - ask for jokes or just have a conversation
+4. Use the message input at the bottom to send messages
+5. You can clear your chat history using the "Clear" button
+
+## Troubleshooting
+
+- **Flask errors**: Make sure your virtual environment is activated and all dependencies are installed.
+- **Database errors**: Check that the `instance` folder exists and contains the SQLite database file.
+- **AI Generation errors**: Ensure Ollama is running with `ollama serve` and the Gemma 3 model is downloaded.
+
