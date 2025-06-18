@@ -2,11 +2,6 @@
 
 JokeTron is an AI-powered joke generator and chat application that uses Gemma 3 on Ollama for personalized humor.
 
-## System Requirements
-- MacOS (Intel or Apple Silicon)
-- Python 3.9+ installed
-- 4GB+ RAM (8GB+ recommended for optimal AI performance)
-
 ## Installation Instructions
 
 ### Step 1: Clone or download this repository
